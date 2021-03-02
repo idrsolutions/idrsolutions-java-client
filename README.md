@@ -13,15 +13,8 @@ find information at the following links for [JPedal](https://www.idrsolutions.co
 
 # Installation #
 
-You can do this via maven by just adding this client as a dependency, as shown below.
-
-```
-<dependency>
-    <groupId>idrsolutions</groupId>
-    <artifactId>idrsolutions-java-client</artifactId>
-    <version>1.0-SNAPSHOT</version>
-</dependency>
-```
+Currently this is done by copying these classes or the build jar to your class path.  
+The client will be added Maven Central soon.
 -----
 
 # Usage #
