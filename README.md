@@ -13,8 +13,10 @@ find information at the following links for [JPedal](https://www.idrsolutions.co
 
 # Installation #
 
+
 Currently this is done by copying these classes or the build jar to your class path.  
 The client will be added Maven Central soon.
+
 -----
 
 # Usage #
