@@ -1,0 +1,8 @@
+
+# maven
+/target/
+/test/
+
+# JetBrains Rider
+.idea/
+*.sln.iml
