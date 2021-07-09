@@ -8,7 +8,7 @@ import java.io.*;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -145,10 +145,10 @@ public class IDRCloudClient {
         if (fileName != null) {
             outputFilePath += '/' + fileName + ".zip";
         } else {
-            outputFilePath += '/' + Path.of(results.get("downloadUrl").toString()).getFileName().toString() + ".zip";
+            outputFilePath += '/' + Paths.get(results.get("downloadUrl")).getFileName().toString() + ".zip";
         }
 
-        download(results.get("downloadUrl").toString(), outputFilePath, encodedAuth);
+        download(results.get("downloadUrl"), outputFilePath, encodedAuth);
     }
 
     /**
@@ -219,7 +219,8 @@ public class IDRCloudClient {
     private static void file(final Map<String, String> parameters, final HttpURLConnection con) throws ClientException {
 
         final File file = new File(parameters.get("file"));
-        final String fileName = Path.of(file.toURI()).getFileName().toString();
+        final String fileName = Paths.get(file.toURI()).getFileName().toString();
+        final String format = fileName.substring(fileName.lastIndexOf('.')+ 1);
         final String boundary = String.valueOf(System.currentTimeMillis());
         try {
             con.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
@@ -232,7 +233,7 @@ public class IDRCloudClient {
                 if ("file".equals(key)) {
                     post.append("Content-Disposition: form-data; name=\"").append(key).append("\"; filename=\"").append(fileName).append("\";").append("\r\n");
                     final String fileString = new String(Files.readAllBytes(file.toPath()));
-                    post.append("Content-Type: application/pdf\r\n\r\n").append(fileString).append("\r\n");
+                    post.append("Content-Type: application/" + format + "\r\n\r\n").append(fileString).append("\r\n");
 
                 } else {
                     post.append("Content-Disposition: form-data; name=\"").append(key).append('\"').append("\r\n");
@@ -261,11 +262,11 @@ public class IDRCloudClient {
                     postData.append('&');
                 }
                 final String key = keys.next();
-                postData.append(URLEncoder.encode(key, StandardCharsets.UTF_8));
+                postData.append(URLEncoder.encode(key, StandardCharsets.UTF_8.toString()));
                 postData.append('=');
-                postData.append(URLEncoder.encode(parameters.get(key), StandardCharsets.UTF_8));
+                postData.append(URLEncoder.encode(parameters.get(key), StandardCharsets.UTF_8.toString()));
             }
-            final byte[] postDataBytes = postData.toString().getBytes(StandardCharsets.UTF_8);
+            final byte[] postDataBytes = postData.toString().getBytes(StandardCharsets.UTF_8.toString());
 
             con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
             con.setRequestProperty("Content-Length", String.valueOf(postDataBytes.length));
