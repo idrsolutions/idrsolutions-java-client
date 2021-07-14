@@ -37,6 +37,7 @@ public final class ExampleUsage {
             IDRCloudClient.downloadResults(results, "path/to/outputDir", "example");
         } catch (final ClientException | InterruptedException e) {
             e.printStackTrace();
+            Thread.currentThread().interrupt();
         }
     }
 }
