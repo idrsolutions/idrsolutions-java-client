@@ -51,7 +51,7 @@ public class IDRCloudClient {
     public IDRCloudClient(final String url) {
         endPoint = url;
         requestTimeout = 60000;
-        conversionTimeout = 30;
+        conversionTimeout = -1;
     }
 
     /**
@@ -107,7 +107,7 @@ public class IDRCloudClient {
                 break;
             }
 
-            if (i >= conversionTimeout) {
+            if (conversionTimeout > 0 && i >= conversionTimeout) {
                 throw new ClientException("Failed: File took longer than " + conversionTimeout + " seconds to convert.");
             }
 
