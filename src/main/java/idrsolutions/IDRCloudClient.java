@@ -46,7 +46,7 @@ public class IDRCloudClient {
     /**
      * Constructor, setup the converter details
      *
-     * @param url
+     * @param url The URL of Microservice to connect to.
      */
     public IDRCloudClient(final String url) {
         endPoint = url;
@@ -57,9 +57,9 @@ public class IDRCloudClient {
     /**
      * Constructor with timeout, setup the converter details
      *
-     * @param url
-     * @param requestTimeout
-     * @param conversionTimeout
+     * @param url The URL of Microservice to connect to.
+     * @param requestTimeout The time to wait (in milliseconds) before timing out each request. Set to 60000ms (60s) by default.
+     * @param conversionTimeout The time to wait (in seconds) before timing out the conversion. If value <= 0 then the conversion does not time out. Set to -1 by default.
      */
     public IDRCloudClient(final String url, final int requestTimeout, final int conversionTimeout) {
         endPoint = url;
