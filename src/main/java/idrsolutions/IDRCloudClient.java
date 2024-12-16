@@ -109,7 +109,7 @@ public class IDRCloudClient {
                 break;
             }
 
-            if (conversionTimeout > 0 && i >= conversionTimeout) {
+            if (conversionTimeout != -1 && i >= conversionTimeout) {
                 throw new ClientException("Failed: File took longer than " + conversionTimeout + " seconds to convert.");
             }
 
@@ -226,29 +226,31 @@ public class IDRCloudClient {
         final String boundary = String.valueOf(System.currentTimeMillis());
         try {
             con.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
-
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
             final Iterator<String> keys = parameters.keySet().iterator();
-            final StringBuilder post = new StringBuilder();
+            StringBuilder post = new StringBuilder();
             while (keys.hasNext()) {
                 final String key = keys.next();
                 post.append("--").append(boundary).append("\r\n");
                 if ("file".equals(key)) {
                     post.append("Content-Disposition: form-data; name=\"").append(key).append("\"; filename=\"").append(fileName).append("\";").append("\r\n");
-                    final String fileString = new String(Files.readAllBytes(file.toPath()));
-                    post.append("Content-Type: application/" + format + "\r\n\r\n").append(fileString).append("\r\n");
+                    post.append("Content-Type: application/").append(format).append("\r\n\r\n");
+                    baos.write(post.toString().getBytes());
+                    baos.write(Files.readAllBytes(Paths.get(file.getAbsolutePath())));
+                    baos.write("\r\n".getBytes());
+                    post = new StringBuilder();
 
                 } else {
                     post.append("Content-Disposition: form-data; name=\"").append(key).append('\"').append("\r\n");
-
                     post.append("Content-Type: text/plain; charset=UTF-8\r\n\r\n").append(parameters.get(key)).append("\r\n");
                 }
             }
 
             post.append("--").append(boundary).append("--\r\n");
-            final String postData = post.toString();
-            con.setRequestProperty("Content-Length", String.valueOf(postData.length()));
-            con.getOutputStream().write(postData.getBytes());
-
+            baos.write(post.toString().getBytes());
+            con.setRequestProperty("Content-Length", String.valueOf(baos.size()));
+            con.getOutputStream().write(baos.toByteArray());
+            baos.close();
         } catch (final IOException e) {
             throw new ClientException("Error creating request for file conversion", e);
         }
@@ -268,7 +270,7 @@ public class IDRCloudClient {
                 postData.append('=');
                 postData.append(URLEncoder.encode(parameters.get(key), StandardCharsets.UTF_8.toString()));
             }
-            final byte[] postDataBytes = postData.toString().getBytes(StandardCharsets.UTF_8.toString());
+            final byte[] postDataBytes = postData.toString().getBytes(StandardCharsets.UTF_8);
 
             con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
             con.setRequestProperty("Content-Length", String.valueOf(postDataBytes.length));
